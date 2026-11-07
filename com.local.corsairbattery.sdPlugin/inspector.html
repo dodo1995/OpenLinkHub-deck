@@ -1,0 +1,29 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><style>
+body{font:13px sans-serif;background:#252525;color:#eee;padding:12px}
+select,input,button{box-sizing:border-box;width:100%;padding:8px;margin:7px 0;background:#393939;color:white;border:1px solid #666;border-radius:4px}
+label{display:block;margin-top:12px}small{color:#aaa;line-height:1.5}.check{display:flex;align-items:center;gap:9px;margin:9px 0}.check input{width:auto;margin:0;accent-color:#56a3f4}.size{display:flex;align-items:center;justify-content:space-between}.size output{color:#ddd}input[type=range]{padding:0;accent-color:#56a3f4}
+</style></head><body>
+<label for="endpoint">OpenLinkHub IP:Port</label><input id="endpoint" placeholder="127.0.0.1:27003" spellcheck="false"><small>Default: 127.0.0.1:27003. Optionally prefix with http://</small>
+<label for="device">Device</label><select id="device"><option value="">Please wait…</option></select>
+<label>Additional labels on the key</label>
+<label class="check"><input id="showName" type="checkbox">Device name (e.g. M65 RGB ULTRA)</label>
+<label class="check"><input id="showType" type="checkbox">Device type (e.g. Mouse)</label>
+<small>Choose both, either, or neither. Battery percentage is always shown.</small>
+<label class="check"><input id="showCharging" type="checkbox">Show estimated charging arrows (last 10 minutes)</label>
+<small>Approximation only: a recent battery percentage increase does not confirm that the device is currently charging. Updates may be delayed.</small>
+<label for="namePosition">Device name position</label><select id="namePosition"><option value="above">Above percentage</option><option value="below">Below percentage</option></select>
+<label for="typePosition">Device type position</label><select id="typePosition"><option value="above">Above percentage</option><option value="below">Below percentage</option></select>
+<label class="size" for="batteryFont">Battery percentage font size <output id="batteryFontValue">43</output></label><input id="batteryFont" type="range" min="18" max="54" step="1" value="43">
+<label class="size" for="labelFont">Label font size <output id="labelFontValue">15</output></label><input id="labelFont" type="range" min="8" max="20" step="1" value="15">
+<button id="refresh">Refresh devices</button><small id="status">Connecting…</small>
+<p><small>Green: above 40% · Orange: 20–40% · Red: below 20%.</small></p>
+<script>
+let ws,uuid,context,settings={};const el=id=>document.getElementById(id),sel=el('device'),status=el('status');
+function effective(){let mode=settings.display||'name';return {name:settings.showName??(mode==='name'),type:settings.showType??(mode==='type')};}
+function render(){el('endpoint').value=settings.endpoint||'127.0.0.1:27003';let e=effective();el('showName').checked=e.name;el('showType').checked=e.type;el('showCharging').checked=settings.showCharging!==false;el('namePosition').value=settings.namePosition||'below';el('typePosition').value=settings.typePosition||'below';for(let k of ['batteryFont','labelFont']){el(k).value=settings[k]||(k==='batteryFont'?43:15);el(k+'Value').textContent=el(k).value;}}
+function save(){if(ws?.readyState===1)ws.send(JSON.stringify({event:'setSettings',context,payload:settings}));}
+function refresh(){if(ws?.readyState===1)ws.send(JSON.stringify({event:'sendToPlugin',action:'com.local.corsairbattery.level',context,payload:{refresh:true}}));}
+function connectElgatoStreamDeckSocket(port,pluginUUID,registerEvent,info,actionInfo){uuid=pluginUUID;let a=JSON.parse(actionInfo);context=a.context;settings=a.payload?.settings||{};render();ws=new WebSocket('ws://127.0.0.1:'+port);ws.onopen=()=>ws.send(JSON.stringify({event:registerEvent,uuid}));ws.onmessage=e=>{let m=JSON.parse(e.data);if(m.event==='didReceiveSettings'){settings=m.payload?.settings||{};render();}if(m.event==='sendToPropertyInspector')populate(m.payload?.battery||{},m.payload?.connected);};}
+function populate(b,connected){let previous=settings.serial||sel.value;sel.replaceChildren(new Option('Select device',''));Object.entries(b).sort((a,b)=>(a[1].Device||'').localeCompare(b[1].Device||'')).forEach(([id,d])=>sel.add(new Option((d.Device||id)+' ('+d.Level+'%)',id)));sel.value=previous;status.textContent=connected?'Connected to OpenLinkHub':'OpenLinkHub unavailable';}
+sel.onchange=()=>{settings.serial=sel.value;save()};for(let k of ['namePosition','typePosition'])el(k).onchange=()=>{settings[k]=el(k).value;save()};for(let k of ['showName','showType','showCharging'])el(k).onchange=()=>{settings[k]=el(k).checked;save()};for(let k of ['batteryFont','labelFont'])el(k).oninput=()=>{settings[k]=Number(el(k).value);el(k+'Value').textContent=el(k).value;save()};el('endpoint').onchange=()=>{settings.endpoint=el('endpoint').value.trim();settings.serial='';save();refresh()};el('refresh').onclick=refresh;
+</script></body></html>

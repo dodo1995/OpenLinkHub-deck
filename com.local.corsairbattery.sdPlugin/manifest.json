@@ -1,0 +1,34 @@
+{
+  "Name": "OpenLinkHub-deck",
+  "Description": "Unofficial OpenDeck plugin displaying battery levels from OpenLinkHub. Charging arrows are an imprecise estimate based on a recent battery percentage increase; they may be delayed or incorrect and do not confirm actual charging.",
+  "Author": "OpenLinkHub-deck community",
+  "Version": "1.1.2",
+  "UUID": "com.local.corsairbattery",
+  "SDKVersion": 2,
+  "CodePath": "openlinkhub-deck",
+  "PropertyInspectorPath": "inspector.html",
+  "Icon": "icon",
+  "Category": "OpenLinkHub-deck",
+  "CategoryIcon": "icon",
+  "OS": [
+    {
+      "Platform": "linux",
+      "MinimumVersion": "1"
+    }
+  ],
+  "Actions": [
+    {
+      "Name": "OpenLinkHub Battery",
+      "UUID": "com.local.corsairbattery.level",
+      "Icon": "icon",
+      "Tooltip": "Battery level and estimated charging indication (not a reliable charging status)",
+      "States": [
+        {
+          "Image": "icon",
+          "TitleAlignment": "middle",
+          "FontSize": "12"
+        }
+      ]
+    }
+  ]
+}
