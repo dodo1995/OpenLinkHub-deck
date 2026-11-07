@@ -64,6 +64,20 @@ See the [LICENSE](LICENSE) file for the complete license text.
 
 The license applies to project content for which the copyright holder has the necessary rights. Third-party names, trademarks, and assets remain subject to their respective owners' rights.
 
+
+## Tested Environment
+
+OpenLinkHub-deck v1.1.2 has been tested with the following environment:
+
+- **Operating System:** Bazzite 45 (KDE)
+- **OpenDeck:** 2.14.2 (Flatpak)
+- **OpenLinkHub:** 0.9.4 (inferred from binary build paths)
+- **Architecture:** Linux x86-64
+- **API endpoint:** `http://127.0.0.1:27003/api/systray`
+- **Stream Deck:** Stream Deck Plus
+
+Compatibility with other OpenLinkHub versions, Linux distributions, and Stream Deck models has not yet been verified.
+
 ## Disclaimer
 
 OpenLinkHub-deck is an independent, unofficial community project.
