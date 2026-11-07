@@ -6,6 +6,10 @@ Built in Go, with no Node.js runtime required.
 
 > **Disclaimer:** This is an unofficial community project and is not affiliated with, sponsored by, or endorsed by OpenLinkHub, OpenDeck, or Corsair.
 
+
+![OpenLinkHub-deck Screenshot](screenshot.png)
+
+
 ## Features
 
 - Battery percentage display for supported Corsair wireless devices
